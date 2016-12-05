@@ -7,24 +7,44 @@ import java.util.List;
 import fr.masciulli.drinks.model.Drink;
 import fr.masciulli.drinks.model.Liquor;
 import fr.masciulli.drinks.net.Client;
+import fr.masciulli.drinks.net.ConnectivityChecker;
 import rx.Observable;
 
 public class DataLoader {
     private final Client client;
+    private final Database database;
+    private final ConnectivityChecker connectivityChecker;
 
     public DataLoader(Context context) {
         client = DrinksApplication.get(context).getClient();
+        database = new Database(context);
+        connectivityChecker = new ConnectivityChecker(context);
     }
 
     public Observable<List<Drink>> getDrinks() {
-        //TODO delegate to either client or sqlite
-        return client.getDrinks()
-                .map(this::storeDrinksInDatabase);
+        if (connectivityChecker.isConnectedOrConnecting()) {
+            return loadDrinksFromNetworkAndStoreInDatabase();
+        }
+        return loadDrinksFromDatabase();
     }
 
-    private List<Drink> storeDrinksInDatabase(List<Drink> drinks) {
-        //TODO store drinks
-        return drinks;
+    private Observable<List<Drink>> loadDrinksFromNetworkAndStoreInDatabase() {
+        return dropDrinksFromDatabase()
+                .flatMap(count -> client.getDrinks())
+                .flatMap(this::storeDrinksInDatabase);
+    }
+
+    private Observable<Integer> dropDrinksFromDatabase() {
+        return database.dropAllDrinks();
+    }
+
+    private Observable<List<Drink>> storeDrinksInDatabase(List<Drink> drinks) {
+        return database.storeDrinks(drinks)
+                .map(indexes -> drinks);
+    }
+
+    private Observable<List<Drink>> loadDrinksFromDatabase() {
+        return database.getAllDrinks();
     }
 
     public Observable<List<Liquor>> getLiquors() {
