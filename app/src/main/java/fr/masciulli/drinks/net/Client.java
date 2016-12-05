@@ -39,8 +39,7 @@ public class Client {
 
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
                 .cache(cache)
-                .addNetworkInterceptor(new StethoInterceptor())
-                .addInterceptor(new CustomCacheControlInterceptor(context));
+                .addNetworkInterceptor(new StethoInterceptor());
 
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor()
