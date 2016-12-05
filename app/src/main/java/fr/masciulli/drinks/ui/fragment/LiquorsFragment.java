@@ -13,18 +13,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
-import fr.masciulli.drinks.DrinksApplication;
+import java.util.List;
+
+import fr.masciulli.drinks.DataLoader;
 import fr.masciulli.drinks.R;
 import fr.masciulli.drinks.model.Liquor;
-import fr.masciulli.drinks.net.Client;
 import fr.masciulli.drinks.ui.activity.LiquorActivity;
 import fr.masciulli.drinks.ui.adapter.ItemClickListener;
 import fr.masciulli.drinks.ui.adapter.LiquorsAdapter;
 import fr.masciulli.drinks.ui.adapter.holder.TileViewHolder;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
-import java.util.List;
 
 public class LiquorsFragment extends Fragment implements ItemClickListener<Liquor> {
     private static final String TAG = LiquorsFragment.class.getSimpleName();
@@ -34,46 +33,56 @@ public class LiquorsFragment extends Fragment implements ItemClickListener<Liquo
     private ProgressBar progressBar;
     private View errorView;
 
-    private Client client;
+    private DataLoader loader;
     private LiquorsAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        client = DrinksApplication.get(getActivity()).getClient();
+        loader = new DataLoader(getActivity());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_liquors, container, false);
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
-        errorView = rootView.findViewById(R.id.error);
-        Button refreshButton = (Button) rootView.findViewById(R.id.refresh);
+        View root = inflater.inflate(R.layout.fragment_liquors, container, false);
+        setupViews(root);
+        retrieveLiquors(savedInstanceState);
+        return root;
+    }
 
-        refreshButton.setOnClickListener(v -> loadLiquors());
+    private void setupViews(View root) {
+        recyclerView = (RecyclerView) root.findViewById(R.id.recycler);
+        progressBar = (ProgressBar) root.findViewById(R.id.progress_bar);
+        errorView = root.findViewById(R.id.error);
+        Button refreshButton = (Button) root.findViewById(R.id.refresh);
+
+        refreshButton.setOnClickListener(v -> retrieveLiquorsFromDatabaseOrNetwork());
 
         adapter = new LiquorsAdapter();
         adapter.setItemClickListener(this);
         recyclerView.setLayoutManager(adapter.craftLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
-
-        if (savedInstanceState == null) {
-            loadLiquors();
-        } else {
-            List<Liquor> liquors = savedInstanceState.getParcelableArrayList(STATE_LIQUORS);
-            onLiquorsRetrieved(liquors);
-        }
-
-        return rootView;
     }
 
-    private void loadLiquors() {
+    private void retrieveLiquors(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            retrieveLiquorsFromDatabaseOrNetwork();
+        } else {
+            retrieveLiquorsFromState(savedInstanceState);
+        }
+    }
+
+    private void retrieveLiquorsFromDatabaseOrNetwork() {
         displayLoadingState();
-        client.getLiquors()
+        loader.getLiquors()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onLiquorsRetrieved, this::onError);
+    }
+
+    private void retrieveLiquorsFromState(Bundle savedInstanceState) {
+        List<Liquor> liquors = savedInstanceState.getParcelableArrayList(STATE_LIQUORS);
+        onLiquorsRetrieved(liquors);
     }
 
     private void onError(Throwable throwable) {
