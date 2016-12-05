@@ -17,18 +17,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import fr.masciulli.drinks.DrinksApplication;
+
+import java.util.List;
+
+import fr.masciulli.drinks.DataLoader;
 import fr.masciulli.drinks.R;
 import fr.masciulli.drinks.model.Drink;
-import fr.masciulli.drinks.net.Client;
 import fr.masciulli.drinks.ui.activity.DrinkActivity;
 import fr.masciulli.drinks.ui.adapter.DrinksAdapter;
 import fr.masciulli.drinks.ui.adapter.ItemClickListener;
 import fr.masciulli.drinks.ui.adapter.holder.TileViewHolder;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-
-import java.util.List;
 
 public class DrinksFragment extends Fragment implements SearchView.OnQueryTextListener, ItemClickListener<Drink> {
     private static final String TAG = DrinksFragment.class.getSimpleName();
@@ -40,49 +40,59 @@ public class DrinksFragment extends Fragment implements SearchView.OnQueryTextLi
     private View emptyView;
     private View errorView;
 
-    private Client client;
+    private DataLoader loader;
     private DrinksAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        client = DrinksApplication.get(getActivity()).getClient();
+        loader = new DataLoader(getActivity());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
+        View root = inflater.inflate(R.layout.fragment_drinks, container, false);
+        setupViews(root);
+        retrieveDrinks(savedInstanceState);
+        return root;
+    }
 
-        View rootView = inflater.inflate(R.layout.fragment_drinks, container, false);
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler);
-        progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
-        emptyView = rootView.findViewById(R.id.empty);
-        errorView = rootView.findViewById(R.id.error);
-        Button refreshButton = (Button) rootView.findViewById(R.id.refresh);
+    private void setupViews(View root) {
+        recyclerView = (RecyclerView) root.findViewById(R.id.recycler);
+        progressBar = (ProgressBar) root.findViewById(R.id.progress_bar);
+        emptyView = root.findViewById(R.id.empty);
+        errorView = root.findViewById(R.id.error);
+        Button refreshButton = (Button) root.findViewById(R.id.refresh);
 
-        refreshButton.setOnClickListener(v -> loadDrinks());
+        refreshButton.setOnClickListener(v -> retrieveDrinksFromDatabaseOrNetwork());
 
         adapter = new DrinksAdapter();
         adapter.setItemClickListener(this);
         recyclerView.setLayoutManager(adapter.craftLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
-
-        if (savedInstanceState == null) {
-            loadDrinks();
-        } else {
-            List<Drink> drinks = savedInstanceState.getParcelableArrayList(STATE_DRINKS);
-            onDrinksRetrieved(drinks);
-        }
-
-        return rootView;
     }
 
-    private void loadDrinks() {
+    private void retrieveDrinks(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            retrieveDrinksFromDatabaseOrNetwork();
+        } else {
+            retrieveDrinksFromState(savedInstanceState);
+        }
+    }
+
+    private void retrieveDrinksFromDatabaseOrNetwork() {
         displayLoadingState();
-        client.getDrinks()
+
+        loader.getDrinks()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onDrinksRetrieved, this::onError);
+    }
+
+    private void retrieveDrinksFromState(Bundle savedInstanceState) {
+        List<Drink> drinks = savedInstanceState.getParcelableArrayList(STATE_DRINKS);
+        onDrinksRetrieved(drinks);
     }
 
     private void onDrinksRetrieved(List<Drink> drinks) {
