@@ -8,6 +8,7 @@ import fr.masciulli.drinks.model.Drink;
 import fr.masciulli.drinks.model.Liquor;
 import fr.masciulli.drinks.net.Client;
 import fr.masciulli.drinks.net.ConnectivityChecker;
+import fr.masciulli.drinks.sqlite.Database;
 import rx.Observable;
 
 public class DataLoader {

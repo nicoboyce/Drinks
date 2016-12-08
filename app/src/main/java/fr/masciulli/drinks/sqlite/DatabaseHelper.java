@@ -1,4 +1,4 @@
-package fr.masciulli.drinks;
+package fr.masciulli.drinks.sqlite;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
