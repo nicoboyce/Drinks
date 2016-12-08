@@ -8,7 +8,8 @@ public class ConnectivityChecker {
     private final ConnectivityManager connectivityManager;
 
     public ConnectivityChecker(Context context) {
-        connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        connectivityManager = (ConnectivityManager) context.getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
 

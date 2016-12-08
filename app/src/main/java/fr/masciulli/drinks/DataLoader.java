@@ -49,13 +49,24 @@ public class DataLoader {
     }
 
     public Observable<List<Liquor>> getLiquors() {
-        //TODO delegate to either client or sqlite
-        return client.getLiquors()
-                .map(this::storeLiquorsInDatabase);
+        if (connectivityChecker.isConnectedOrConnecting()) {
+            return loadLiquorsFromNetworkAndStoreInDatabase();
+        }
+        return loadLiquorsFromDatabase();
     }
 
-    private List<Liquor> storeLiquorsInDatabase(List<Liquor> liquors) {
-        //TODO store liquors
-        return liquors;
+    private Observable<List<Liquor>> loadLiquorsFromNetworkAndStoreInDatabase() {
+        return dropDrinksFromDatabase()
+                .flatMap(count -> client.getLiquors())
+                .flatMap(this::storeLiquorsInDatabase);
+    }
+
+    private Observable<List<Liquor>> loadLiquorsFromDatabase() {
+        return database.getAllLiquors();
+    }
+
+    private Observable<List<Liquor>> storeLiquorsInDatabase(List<Liquor> liquors) {
+        return database.storeLiquors(liquors)
+                .map(indexes -> liquors);
     }
 }

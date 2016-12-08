@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.masciulli.drinks.model.Drink;
+import fr.masciulli.drinks.model.Liquor;
 import rx.Observable;
 
 public class Database {
@@ -23,7 +24,15 @@ public class Database {
     public Observable<List<Long>> storeDrinks(List<Drink> drinks) {
         return Observable.from(drinks)
                 .map(this::createDrinkContentValues)
-                .flatMap(this::insertDrinksContentValues)
+                .flatMap(this::insertDrinkContentValues)
+                .flatMap(this::checkInserted)
+                .toList();
+    }
+
+    public Observable<List<Long>> storeLiquors(List<Liquor> liquors) {
+        return Observable.from(liquors)
+                .map(this::createLiquorContentValues)
+                .flatMap(this::insertLiquorContentValues)
                 .flatMap(this::checkInserted)
                 .toList();
     }
@@ -38,9 +47,23 @@ public class Database {
         return values;
     }
 
-    private Observable<Long> insertDrinksContentValues(ContentValues contentValues) {
+    private ContentValues createLiquorContentValues(Liquor liquor) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_NAME, liquor.name());
+        values.put(DatabaseHelper.COLUMN_IMAGE_URL, liquor.imageUrl());
+        values.put(DatabaseHelper.COLUMN_HISTORY, liquor.history());
+        values.put(DatabaseHelper.COLUMN_WIKIPEDIA, liquor.wikipedia());
+        return values;
+    }
+
+    private Observable<Long> insertDrinkContentValues(ContentValues contentValues) {
         SQLiteDatabase database = sqLiteHelper.getWritableDatabase();
         return Observable.just(database.insert(DatabaseHelper.TABLE_DRINKS, null, contentValues));
+    }
+
+    private Observable<Long> insertLiquorContentValues(ContentValues contentValues) {
+        SQLiteDatabase database = sqLiteHelper.getWritableDatabase();
+        return Observable.just(database.insert(DatabaseHelper.TABLE_LIQUORS, null, contentValues));
     }
 
     private Observable<Long> checkInserted(long index) {
@@ -54,7 +77,7 @@ public class Database {
 
     public Observable<List<Drink>> getAllDrinks() {
         return getAllDrinksCursor()
-                .map(this::cursorToContentValues)
+                .map(this::drinksCursorToContentValues)
                 .flatMap(Observable::from)
                 .map(this::contentValuesToDrink)
                 .toList();
@@ -65,7 +88,7 @@ public class Database {
         return Observable.just(database.query(DatabaseHelper.TABLE_DRINKS, null, null, null, null, null, null));
     }
 
-    private List<ContentValues> cursorToContentValues(Cursor cursor) {
+    private List<ContentValues> drinksCursorToContentValues(Cursor cursor) {
         List<ContentValues> result = new ArrayList<>();
         while (cursor.moveToNext()) {
             ContentValues values = new ContentValues();
@@ -94,5 +117,42 @@ public class Database {
         //TODO fetch real ingredients
         List<String> ingredients = new ArrayList<>();
         return Drink.create(name, imageUrl, history, wikipedia, instructions, ingredients);
+    }
+
+    public Observable<List<Liquor>> getAllLiquors() {
+        return getAllLiquorsCursor()
+                .map(this::liquorsCursorToContentValues)
+                .flatMap(Observable::from)
+                .map(this::contentValuesToLiquor)
+                .toList();
+    }
+
+    private Observable<Cursor> getAllLiquorsCursor() {
+        SQLiteDatabase database = sqLiteHelper.getReadableDatabase();
+        return Observable.just(database.query(DatabaseHelper.TABLE_LIQUORS, null, null, null, null, null, null));
+    }
+
+    private List<ContentValues> liquorsCursorToContentValues(Cursor cursor) {
+        List<ContentValues> result = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            ContentValues values = new ContentValues();
+            values.put(DatabaseHelper.COLUMN_NAME, getFromCursor(cursor, DatabaseHelper.COLUMN_NAME));
+            values.put(DatabaseHelper.COLUMN_IMAGE_URL, getFromCursor(cursor, DatabaseHelper.COLUMN_IMAGE_URL));
+            values.put(DatabaseHelper.COLUMN_HISTORY, getFromCursor(cursor, DatabaseHelper.COLUMN_HISTORY));
+            values.put(DatabaseHelper.COLUMN_WIKIPEDIA, getFromCursor(cursor, DatabaseHelper.COLUMN_WIKIPEDIA));
+
+            result.add(values);
+        }
+        return result;
+    }
+
+    private Liquor contentValuesToLiquor(ContentValues contentValues) {
+        String name = contentValues.getAsString(DatabaseHelper.COLUMN_NAME);
+        String imageUrl = contentValues.getAsString(DatabaseHelper.COLUMN_IMAGE_URL);
+        String history = contentValues.getAsString(DatabaseHelper.COLUMN_HISTORY);
+        String wikipedia = contentValues.getAsString(DatabaseHelper.COLUMN_WIKIPEDIA);
+        //TODO fetch other names
+        List<String> otherNames = new ArrayList<>();
+        return Liquor.create(name, imageUrl, history, wikipedia, otherNames);
     }
 }
