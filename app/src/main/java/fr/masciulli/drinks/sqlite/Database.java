@@ -23,16 +23,47 @@ public class Database {
 
     public Observable<List<Long>> storeDrinks(List<Drink> drinks) {
         return Observable.from(drinks)
-                .map(this::createDrinkContentValues)
-                .flatMap(this::insertDrinkContentValues)
-                .flatMap(this::checkInserted)
+                .flatMap(this::storeDrink)
                 .toList();
+    }
+
+    private Observable<Long> storeDrink(Drink drink) {
+        return Observable.just(drink)
+                .map(this::createDrinkContentValues)
+                .map(this::insertDrinkContentValues)
+                .flatMap(this::checkInserted)
+                .flatMap(id -> storeIngredients(id, drink));
+    }
+
+    private Observable<Long> storeIngredients(long drinkId, Drink drink) {
+        return Observable.from(drink.ingredients())
+                .flatMap(ingredient -> storeIngredient(drinkId, ingredient))
+                .flatMap(this::checkInserted)
+                .toList()
+                .map(longs -> drinkId);
+    }
+
+    private Observable<Long> storeIngredient(long drinkId, String ingredient) {
+        return Observable.just(createIngredientContentValues(drinkId, ingredient))
+                .map(this::insertIngredientContentValues);
+    }
+
+    private long insertIngredientContentValues(ContentValues values) {
+        SQLiteDatabase database = sqLiteHelper.getWritableDatabase();
+        return database.insert(DatabaseHelper.TABLE_INGREDIENTS, null, values);
+    }
+
+    private ContentValues createIngredientContentValues(long drinkId, String ingredient) {
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_NAME, ingredient);
+        values.put(DatabaseHelper.COLUMN_DRINK, drinkId);
+        return values;
     }
 
     public Observable<List<Long>> storeLiquors(List<Liquor> liquors) {
         return Observable.from(liquors)
                 .map(this::createLiquorContentValues)
-                .flatMap(this::insertLiquorContentValues)
+                .map(this::insertLiquorContentValues)
                 .flatMap(this::checkInserted)
                 .toList();
     }
@@ -56,14 +87,14 @@ public class Database {
         return values;
     }
 
-    private Observable<Long> insertDrinkContentValues(ContentValues contentValues) {
+    private long insertDrinkContentValues(ContentValues contentValues) {
         SQLiteDatabase database = sqLiteHelper.getWritableDatabase();
-        return Observable.just(database.insert(DatabaseHelper.TABLE_DRINKS, null, contentValues));
+        return database.insert(DatabaseHelper.TABLE_DRINKS, null, contentValues);
     }
 
-    private Observable<Long> insertLiquorContentValues(ContentValues contentValues) {
+    private long insertLiquorContentValues(ContentValues contentValues) {
         SQLiteDatabase database = sqLiteHelper.getWritableDatabase();
-        return Observable.just(database.insert(DatabaseHelper.TABLE_LIQUORS, null, contentValues));
+        return database.insert(DatabaseHelper.TABLE_LIQUORS, null, contentValues);
     }
 
     private Observable<Long> checkInserted(long index) {
@@ -71,6 +102,7 @@ public class Database {
     }
 
     public Observable<Integer> dropAllDrinks() {
+        //TODO delete on subscribe
         SQLiteDatabase database = sqLiteHelper.getWritableDatabase();
         return Observable.just(database.delete(DatabaseHelper.TABLE_DRINKS, null, null));
     }

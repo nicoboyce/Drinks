@@ -10,6 +10,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_DRINKS = "drinks";
     public static final String TABLE_LIQUORS = "liquors";
+    public static final String TABLE_INGREDIENTS = "drink_ingredients";
 
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_NAME = "name";
@@ -17,6 +18,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_HISTORY = "history";
     public static final String COLUMN_WIKIPEDIA = "wikipedia";
     public static final String COLUMN_INSTRUCTIONS = "instructions";
+    public static final String COLUMN_DRINK = "drink";
 
     private static final String SQL_CREATE_DRINKS =
             "CREATE TABLE " + TABLE_DRINKS + " ("
@@ -35,8 +37,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + COLUMN_HISTORY + " TEXT,"
                     + COLUMN_WIKIPEDIA + " TEXT)";
 
+    private static final String SQL_CREATE_INGREDIENTS =
+            "CREATE TABLE " + TABLE_INGREDIENTS + " ("
+                    + COLUMN_ID + " INTEGER PRIMARY KEY, "
+                    + COLUMN_NAME + " TEXT,"
+                    + COLUMN_DRINK + " INTEGER)";
+
     private static final String SQL_DELETE_ALL_DRINKS = "DELETE FROM " + TABLE_DRINKS;
     private static final String SQL_DELETE_ALL_LIQUORS = "DELETE FROM " + TABLE_LIQUORS;
+    private static final String SQL_DELETE_ALL_INGREDIENTS = "DELETE FROM " + TABLE_INGREDIENTS;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -46,11 +55,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase database) {
         database.execSQL(SQL_CREATE_DRINKS);
         database.execSQL(SQL_CREATE_LIQUORS);
+        database.execSQL(SQL_CREATE_INGREDIENTS);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
         database.execSQL(SQL_DELETE_ALL_DRINKS);
         database.execSQL(SQL_DELETE_ALL_LIQUORS);
+        database.execSQL(SQL_DELETE_ALL_INGREDIENTS);
     }
 }
