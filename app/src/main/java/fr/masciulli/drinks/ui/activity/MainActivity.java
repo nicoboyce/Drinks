@@ -11,9 +11,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.masciulli.drinks.R;
+import fr.masciulli.drinks.drinks.DrinksPresenter;
+import fr.masciulli.drinks.model.Drink;
+import fr.masciulli.drinks.net.DrinksRepository;
 import fr.masciulli.drinks.ui.fragment.DrinksFragment;
 import fr.masciulli.drinks.ui.fragment.LiquorsFragment;
+import rx.Observable;
 
 public class MainActivity extends AppCompatActivity {
     private static final int POSITION_DRINKS = 0;
@@ -29,12 +37,23 @@ public class MainActivity extends AppCompatActivity {
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
 
         setSupportActionBar(toolbar);
+
+        DrinksFragment drinksFragment = new DrinksFragment();
+        //TODO create a real repository
+        DrinksPresenter drinksPresenter = new DrinksPresenter(new DrinksRepository() {
+            @Override
+            public Observable<List<Drink>> getDrinks() {
+                return Observable.just(new ArrayList<>());
+            }
+        }, drinksFragment);
+        drinksFragment.setPresenter(drinksPresenter);
+
         pager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
                 switch (position) {
                     case POSITION_DRINKS:
-                        return new DrinksFragment();
+                        return drinksFragment;
                     case POSITION_LIQUORS:
                         return new LiquorsFragment();
                     default:

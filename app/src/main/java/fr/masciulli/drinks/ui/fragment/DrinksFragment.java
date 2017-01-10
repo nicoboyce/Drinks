@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,36 +16,34 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import fr.masciulli.drinks.DrinksApplication;
+
 import fr.masciulli.drinks.R;
+import fr.masciulli.drinks.drinks.DrinksContract;
 import fr.masciulli.drinks.model.Drink;
-import fr.masciulli.drinks.net.Client;
 import fr.masciulli.drinks.ui.activity.DrinkActivity;
 import fr.masciulli.drinks.ui.adapter.DrinksAdapter;
 import fr.masciulli.drinks.ui.adapter.ItemClickListener;
 import fr.masciulli.drinks.ui.adapter.holder.TileViewHolder;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 import java.util.List;
 
-public class DrinksFragment extends Fragment implements SearchView.OnQueryTextListener, ItemClickListener<Drink> {
+public class DrinksFragment extends Fragment implements SearchView.OnQueryTextListener, ItemClickListener<Drink>, DrinksContract.View {
     private static final String TAG = DrinksFragment.class.getSimpleName();
 
     private static final String STATE_DRINKS = "state_drinks";
+
+    private DrinksContract.Presenter presenter;
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private View emptyView;
     private View errorView;
 
-    private Client client;
     private DrinksAdapter adapter;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        client = DrinksApplication.get(getActivity()).getClient();
+    public void setPresenter(DrinksContract.Presenter presenter) {
+        this.presenter = presenter;
     }
 
     @Override
@@ -60,7 +57,7 @@ public class DrinksFragment extends Fragment implements SearchView.OnQueryTextLi
         errorView = rootView.findViewById(R.id.error);
         Button refreshButton = (Button) rootView.findViewById(R.id.refresh);
 
-        refreshButton.setOnClickListener(v -> loadDrinks());
+        refreshButton.setOnClickListener(v -> presenter.refreshDrinks());
 
         adapter = new DrinksAdapter();
         adapter.setItemClickListener(this);
@@ -68,49 +65,36 @@ public class DrinksFragment extends Fragment implements SearchView.OnQueryTextLi
         recyclerView.setAdapter(adapter);
 
         if (savedInstanceState == null) {
-            loadDrinks();
+            presenter.start();
         } else {
             List<Drink> drinks = savedInstanceState.getParcelableArrayList(STATE_DRINKS);
-            onDrinksRetrieved(drinks);
+            showDrinks(drinks);
         }
 
         return rootView;
     }
 
-    private void loadDrinks() {
-        displayLoadingState();
-        client.getDrinks()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onDrinksRetrieved, this::onError);
-    }
-
-    private void onDrinksRetrieved(List<Drink> drinks) {
-        adapter.setDrinks(drinks);
-        displayNormalState();
-    }
-
-    private void onError(Throwable throwable) {
-        Log.e(TAG, "Couldn't retrieve drinks", throwable);
-        displayErrorState();
-    }
-
-    private void displayLoadingState() {
+    @Override
+    public void showDrinks(List<Drink> drinks) {
         errorView.setVisibility(View.GONE);
-        progressBar.setVisibility(View.VISIBLE);
-        recyclerView.setVisibility(View.GONE);
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+
+        adapter.setDrinks(drinks);
     }
 
-    private void displayErrorState() {
+    @Override
+    public void showLoadingError() {
         errorView.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
     }
 
-    private void displayNormalState() {
+    @Override
+    public void showLoading() {
         errorView.setVisibility(View.GONE);
-        progressBar.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
