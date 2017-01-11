@@ -37,6 +37,11 @@ public class DrinksPresenter implements DrinksContract.Presenter {
 
     private void drinksLoaded(List<Drink> drinks) {
         view.showDrinks(drinks);
+        if (drinks.isEmpty()) {
+            view.showEmpty();
+        } else {
+            view.hideEmpty();
+        }
     }
 
     private void errorLoadingDrinks(Throwable throwable) {

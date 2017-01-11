@@ -27,8 +27,6 @@ import fr.masciulli.drinks.ui.adapter.holder.TileViewHolder;
 import java.util.List;
 
 public class DrinksFragment extends Fragment implements SearchView.OnQueryTextListener, ItemClickListener<Drink>, DrinksContract.View {
-    private static final String TAG = DrinksFragment.class.getSimpleName();
-
     private static final String STATE_DRINKS = "state_drinks";
 
     private DrinksContract.Presenter presenter;
@@ -133,11 +131,13 @@ public class DrinksFragment extends Fragment implements SearchView.OnQueryTextLi
         return false;
     }
 
-    private void showEmpty() {
+    @Override
+    public void showEmpty() {
         emptyView.setVisibility(View.VISIBLE);
     }
 
-    private void hideEmpty() {
+    @Override
+    public void hideEmpty() {
         emptyView.setVisibility(View.GONE);
     }
 

@@ -18,6 +18,8 @@ public interface DrinksContract {
         void showDrinks(List<Drink> drinks);
         void showLoadingError();
         void showLoading();
+        void showEmpty();
+        void hideEmpty();
         void openDrink(int position, Drink drink);
     }
 }
