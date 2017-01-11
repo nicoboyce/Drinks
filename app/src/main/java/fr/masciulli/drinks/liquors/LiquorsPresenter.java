@@ -1,17 +1,14 @@
 package fr.masciulli.drinks.liquors;
 
-import android.util.Log;
-
 import java.util.List;
 
 import fr.masciulli.drinks.model.Liquor;
 import fr.masciulli.drinks.net.liquors.LiquorsRepository;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class LiquorsPresenter implements LiquorsContract.Presenter {
-    private static final String TAG = LiquorsPresenter.class.getSimpleName();
-
     private final LiquorsRepository liquorsRepository;
     private final LiquorsContract.View view;
 
@@ -38,7 +35,7 @@ public class LiquorsPresenter implements LiquorsContract.Presenter {
     }
 
     private void errorLoadingLiquors(Throwable throwable) {
-        Log.e(TAG, "Error loading liquors", throwable);
+        Timber.e("Error loading liquors", throwable);
         view.showLoadingError();
     }
 

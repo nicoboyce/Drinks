@@ -1,7 +1,5 @@
 package fr.masciulli.drinks.drinks;
 
-import android.util.Log;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -10,10 +8,9 @@ import fr.masciulli.drinks.net.drinks.DrinksRepository;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class DrinksPresenter implements DrinksContract.Presenter {
-    private static final String TAG = DrinksPresenter.class.getSimpleName();
-
     private final DrinksRepository drinksRepository;
     private final DrinksContract.View view;
 
@@ -45,7 +42,7 @@ public class DrinksPresenter implements DrinksContract.Presenter {
     }
 
     private void errorLoadingDrinks(Throwable throwable) {
-        Log.e(TAG, "Error loading drinks", throwable);
+        Timber.e("Error loading drinks", throwable);
         view.showLoadingError();
     }
 

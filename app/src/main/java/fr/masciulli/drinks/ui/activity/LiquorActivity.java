@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -25,13 +24,12 @@ import fr.masciulli.drinks.ui.adapter.holder.TileViewHolder;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 import java.util.List;
 import java.util.Locale;
 
 public class LiquorActivity extends AppCompatActivity {
-    private static final String TAG = LiquorActivity.class.getSimpleName();
-
     private static final boolean TRANSITIONS_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     public static final String EXTRA_LIQUOR = "extra_liquor";
     private static final String STATE_DRINKS = "state_drinks";
@@ -122,7 +120,7 @@ public class LiquorActivity extends AppCompatActivity {
     }
 
     private void onError(Throwable throwable) {
-        Log.e(TAG, "Couldn't retrieve liquors", throwable);
+        Timber.e("Couldn't retrieve liquors", throwable);
     }
 
     private void onDrinksRetrieved(List<Drink> drinks) {

@@ -5,6 +5,7 @@ import android.content.Context;
 import com.facebook.stetho.Stetho;
 import com.squareup.leakcanary.LeakCanary;
 import fr.masciulli.drinks.net.Client;
+import timber.log.Timber;
 
 public class DrinksApplication extends Application {
     //TODO remove client from here once repositories are all singletons
@@ -20,6 +21,8 @@ public class DrinksApplication extends Application {
         Stetho.initializeWithDefaults(this);
 
         client = Client.getInstance();
+
+        Timber.plant(new Timber.DebugTree());
     }
 
     public Client getClient() {

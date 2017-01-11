@@ -72,6 +72,8 @@ dependencies {
     compile 'me.tatarka:auto-parcel-gson:0.1'
     apt 'me.tatarka:auto-parcel-gson-processor:0.1'
 
+    compile 'com.jakewharton.timber:timber:4.5.0'
+
     firebaseCompile 'com.google.firebase:firebase-core:9.6.1'
     firebaseCompile 'com.google.firebase:firebase-crash:9.6.1'
 

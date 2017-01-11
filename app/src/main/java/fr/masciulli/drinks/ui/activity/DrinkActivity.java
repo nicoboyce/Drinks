@@ -22,8 +22,6 @@ import fr.masciulli.drinks.model.Drink;
 import fr.masciulli.drinks.ui.EnterPostponeTransitionCallback;
 
 public class DrinkActivity extends AppCompatActivity {
-    private static final String TAG = DrinkActivity.class.getSimpleName();
-
     public static final String EXTRA_DRINK = "extra_drink";
     private static final boolean TRANSITIONS_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 
