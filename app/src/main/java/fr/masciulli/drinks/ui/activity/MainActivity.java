@@ -13,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import fr.masciulli.drinks.DrinksApplication;
 import fr.masciulli.drinks.R;
 import fr.masciulli.drinks.drinks.DrinksFragment;
 import fr.masciulli.drinks.drinks.DrinksPresenter;
@@ -37,8 +36,7 @@ public class MainActivity extends AppCompatActivity {
         DrinksFragment drinksFragment = retrieveOrCreateDrinksFragment();
         LiquorsFragment liquorsFragment = retrieveOrCreateLiquorsFragment();
 
-        //TODO create a real repository
-        DrinksPresenter drinksPresenter = new DrinksPresenter(() -> DrinksApplication.get(MainActivity.this).getClient().getDrinks(), drinksFragment);
+        DrinksPresenter drinksPresenter = new DrinksPresenter(Injection.provideDrinksRepository(), drinksFragment);
         drinksFragment.setPresenter(drinksPresenter);
 
         pager.setAdapter(new DrinksFragmentPagerAdapter(getSupportFragmentManager(), drinksFragment, liquorsFragment));

@@ -7,6 +7,7 @@ import com.squareup.leakcanary.LeakCanary;
 import fr.masciulli.drinks.net.Client;
 
 public class DrinksApplication extends Application {
+    //TODO remove client from here once repositories are all singletons
     private Client client;
 
     @Override
@@ -18,7 +19,7 @@ public class DrinksApplication extends Application {
 
         Stetho.initializeWithDefaults(this);
 
-        client = new Client(this);
+        client = Client.getInstance();
     }
 
     public Client getClient() {

@@ -1,19 +1,15 @@
 package fr.masciulli.drinks.net;
 
-import android.content.Context;
-
-import auto.parcelgson.gson.AutoParcelGsonTypeAdapterFactory;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.File;
 import java.util.List;
 
+import auto.parcelgson.gson.AutoParcelGsonTypeAdapterFactory;
 import fr.masciulli.drinks.BuildConfig;
 import fr.masciulli.drinks.model.Drink;
 import fr.masciulli.drinks.model.Liquor;
-import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -22,25 +18,22 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 
 public class Client {
-
-    private static final String CACHE_RESPONSES_DIR = "responses";
     private static final String SERVER_BASE_URL = "http://drinks-api.appspot.com";
-    private static final long CACHE_MAX_SIZE = 10 * 1024 * 1024;
+
+    private static Client instance;
 
     private WebApi retrofit;
 
-    public Client(Context context) {
-        this(context, SERVER_BASE_URL);
+    public static Client getInstance() {
+        if (instance == null) {
+            instance = new Client(SERVER_BASE_URL);
+        }
+        return instance;
     }
 
-    Client(Context context, String baseUrl) {
-        File httpCacheDirectory = new File(context.getCacheDir(), CACHE_RESPONSES_DIR);
-        Cache cache = new Cache(httpCacheDirectory, CACHE_MAX_SIZE);
-
+    Client(String baseUrl) {
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
-                .cache(cache)
-                .addNetworkInterceptor(new StethoInterceptor())
-                .addInterceptor(new CustomCacheControlInterceptor(context));
+                .addNetworkInterceptor(new StethoInterceptor());
 
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor()
