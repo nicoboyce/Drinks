@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -14,8 +15,8 @@ import android.view.MenuItem;
 
 import fr.masciulli.drinks.DrinksApplication;
 import fr.masciulli.drinks.R;
-import fr.masciulli.drinks.drinks.DrinksPresenter;
 import fr.masciulli.drinks.drinks.DrinksFragment;
+import fr.masciulli.drinks.drinks.DrinksPresenter;
 import fr.masciulli.drinks.ui.fragment.LiquorsFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,43 +34,39 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
 
-        DrinksFragment drinksFragment = new DrinksFragment();
+        DrinksFragment drinksFragment = retrieveOrCreateDrinksFragment();
+        LiquorsFragment liquorsFragment = retrieveOrCreateLiquorsFragment();
+
         //TODO create a real repository
         DrinksPresenter drinksPresenter = new DrinksPresenter(() -> DrinksApplication.get(MainActivity.this).getClient().getDrinks(), drinksFragment);
         drinksFragment.setPresenter(drinksPresenter);
 
-        pager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
-            @Override
-            public Fragment getItem(int position) {
-                switch (position) {
-                    case POSITION_DRINKS:
-                        return drinksFragment;
-                    case POSITION_LIQUORS:
-                        return new LiquorsFragment();
-                    default:
-                        throw new IndexOutOfBoundsException("No fragment for position " + position);
-                }
-            }
-
-            @Override
-            public CharSequence getPageTitle(int position) {
-                switch (position) {
-                    case POSITION_DRINKS:
-                        return getString(R.string.title_drinks);
-                    case POSITION_LIQUORS:
-                        return getString(R.string.title_liquors);
-                    default:
-                        throw new IndexOutOfBoundsException("No fragment for position " + position);
-                }
-            }
-
-            @Override
-            public int getCount() {
-                return 2;
-            }
-        });
+        pager.setAdapter(new DrinksFragmentPagerAdapter(getSupportFragmentManager(), drinksFragment, liquorsFragment));
 
         tabLayout.setupWithViewPager(pager);
+    }
+
+    private DrinksFragment retrieveOrCreateDrinksFragment() {
+        DrinksFragment fragment = (DrinksFragment) getSupportFragmentManager()
+                .findFragmentByTag(getFragmentTag(POSITION_DRINKS));
+        if (fragment == null) {
+            return new DrinksFragment();
+        }
+        return fragment;
+    }
+
+    private LiquorsFragment retrieveOrCreateLiquorsFragment() {
+        LiquorsFragment fragment = (LiquorsFragment) getSupportFragmentManager()
+                .findFragmentByTag(getFragmentTag(POSITION_LIQUORS));
+        if (fragment == null) {
+            return new LiquorsFragment();
+        }
+        return fragment;
+    }
+
+
+    private String getFragmentTag(int fragmentId) {
+        return "android:switcher:" + R.id.pager + ":" + fragmentId;
     }
 
     @Override
@@ -111,5 +108,45 @@ public class MainActivity extends AppCompatActivity {
         Uri uri = Uri.parse(uriText);
         sendIntent.setData(uri);
         startActivity(Intent.createChooser(sendIntent, getString(R.string.action_feedback)));
+    }
+
+    private class DrinksFragmentPagerAdapter extends FragmentPagerAdapter {
+        private final DrinksFragment drinksFragment;
+        private final LiquorsFragment liquorsFragment;
+
+        public DrinksFragmentPagerAdapter(FragmentManager fragmentManager, DrinksFragment drinksFragment, LiquorsFragment liquorsFragment) {
+            super(fragmentManager);
+            this.drinksFragment = drinksFragment;
+            this.liquorsFragment = liquorsFragment;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case POSITION_DRINKS:
+                    return drinksFragment;
+                case POSITION_LIQUORS:
+                    return liquorsFragment;
+                default:
+                    throw new IndexOutOfBoundsException("No fragment for position " + position);
+            }
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            switch (position) {
+                case POSITION_DRINKS:
+                    return getString(R.string.title_drinks);
+                case POSITION_LIQUORS:
+                    return getString(R.string.title_liquors);
+                default:
+                    throw new IndexOutOfBoundsException("No fragment for position " + position);
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 2;
+        }
     }
 }
