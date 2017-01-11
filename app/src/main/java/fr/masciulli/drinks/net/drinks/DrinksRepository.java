@@ -1,8 +1,9 @@
-package fr.masciulli.drinks.net;
+package fr.masciulli.drinks.net.drinks;
 
 import java.util.List;
 
 import fr.masciulli.drinks.model.Drink;
+import fr.masciulli.drinks.net.Client;
 import rx.Observable;
 
 public class DrinksRepository implements DrinksDataSource {

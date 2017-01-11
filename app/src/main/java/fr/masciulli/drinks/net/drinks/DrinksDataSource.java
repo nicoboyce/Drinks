@@ -1,4 +1,4 @@
-package fr.masciulli.drinks.net;
+package fr.masciulli.drinks.net.drinks;
 
 import java.util.List;
 

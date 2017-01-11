@@ -16,7 +16,8 @@ import android.view.MenuItem;
 import fr.masciulli.drinks.R;
 import fr.masciulli.drinks.drinks.DrinksFragment;
 import fr.masciulli.drinks.drinks.DrinksPresenter;
-import fr.masciulli.drinks.ui.fragment.LiquorsFragment;
+import fr.masciulli.drinks.liquors.LiquorsFragment;
+import fr.masciulli.drinks.liquors.LiquorsPresenter;
 
 public class MainActivity extends AppCompatActivity {
     private static final int POSITION_DRINKS = 0;
@@ -38,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
 
         DrinksPresenter drinksPresenter = new DrinksPresenter(Injection.provideDrinksRepository(), drinksFragment);
         drinksFragment.setPresenter(drinksPresenter);
+
+        LiquorsPresenter liquorsPresenter = new LiquorsPresenter(Injection.provideLiquorsRepository(), liquorsFragment);
+        liquorsFragment.setPresenter(liquorsPresenter);
 
         pager.setAdapter(new DrinksFragmentPagerAdapter(getSupportFragmentManager(), drinksFragment, liquorsFragment));
 

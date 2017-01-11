@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Locale;
 
 import fr.masciulli.drinks.model.Drink;
-import fr.masciulli.drinks.net.DrinksRepository;
+import fr.masciulli.drinks.net.drinks.DrinksRepository;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;

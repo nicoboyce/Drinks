@@ -1,0 +1,49 @@
+package fr.masciulli.drinks.liquors;
+
+import android.util.Log;
+
+import java.util.List;
+
+import fr.masciulli.drinks.model.Liquor;
+import fr.masciulli.drinks.net.liquors.LiquorsRepository;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+
+public class LiquorsPresenter implements LiquorsContract.Presenter {
+    private static final String TAG = LiquorsPresenter.class.getSimpleName();
+
+    private final LiquorsRepository liquorsRepository;
+    private final LiquorsContract.View view;
+
+    public LiquorsPresenter(LiquorsRepository liquorsRepository, LiquorsContract.View view) {
+        this.liquorsRepository = liquorsRepository;
+        this.view = view;
+    }
+
+    @Override
+    public void start() {
+        loadLiquors();
+    }
+
+    private void loadLiquors() {
+        view.showLoading();
+        liquorsRepository.getLiquors()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::liquorsLoaded, this::errorLoadingLiquors);
+    }
+
+    private void liquorsLoaded(List<Liquor> liquors) {
+        view.showLiquors(liquors);
+    }
+
+    private void errorLoadingLiquors(Throwable throwable) {
+        Log.e(TAG, "Error loading liquors", throwable);
+        view.showLoadingError();
+    }
+
+    @Override
+    public void refreshLiquors() {
+        loadLiquors();
+    }
+}
