@@ -46,4 +46,9 @@ public class LiquorsPresenter implements LiquorsContract.Presenter {
     public void refreshLiquors() {
         loadLiquors();
     }
+
+    @Override
+    public void openLiquor(int position, Liquor liquor) {
+        view.openLiquor(position, liquor);
+    }
 }

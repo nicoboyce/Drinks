@@ -22,7 +22,6 @@ import fr.masciulli.drinks.ui.adapter.LiquorsAdapter;
 import fr.masciulli.drinks.ui.adapter.holder.TileViewHolder;
 
 public class LiquorsFragment extends Fragment implements ItemClickListener<Liquor>, LiquorsContract.View {
-    private static final String TAG = LiquorsFragment.class.getSimpleName();
     private static final String STATE_LIQUORS = "state_liquors";
 
     private LiquorsContract.Presenter presenter;
@@ -32,6 +31,11 @@ public class LiquorsFragment extends Fragment implements ItemClickListener<Liquo
 
     private View errorView;
     private LiquorsAdapter adapter;
+
+    @Override
+    public void setPresenter(LiquorsContract.Presenter presenter) {
+        this.presenter = presenter;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -60,6 +64,11 @@ public class LiquorsFragment extends Fragment implements ItemClickListener<Liquo
 
     @Override
     public void onItemClick(int position, Liquor liquor) {
+        presenter.openLiquor(position, liquor);
+    }
+
+    @Override
+    public void openLiquor(int position, Liquor liquor) {
         Intent intent = new Intent(getActivity(), LiquorActivity.class);
         intent.putExtra(LiquorActivity.EXTRA_LIQUOR, liquor);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -77,11 +86,6 @@ public class LiquorsFragment extends Fragment implements ItemClickListener<Liquo
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(STATE_LIQUORS, adapter.getLiquors());
-    }
-
-    @Override
-    public void setPresenter(LiquorsContract.Presenter presenter) {
-        this.presenter = presenter;
     }
 
     @Override
