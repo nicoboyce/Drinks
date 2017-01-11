@@ -1,4 +1,4 @@
-package fr.masciulli.drinks.ui.fragment;
+package fr.masciulli.drinks.drinks;
 
 import android.annotation.TargetApi;
 import android.app.ActivityOptions;
@@ -18,7 +18,6 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import fr.masciulli.drinks.R;
-import fr.masciulli.drinks.drinks.DrinksContract;
 import fr.masciulli.drinks.model.Drink;
 import fr.masciulli.drinks.ui.activity.DrinkActivity;
 import fr.masciulli.drinks.ui.adapter.DrinksAdapter;
@@ -100,6 +99,11 @@ public class DrinksFragment extends Fragment implements SearchView.OnQueryTextLi
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onItemClick(int position, Drink drink) {
+        presenter.openDrink(position, drink);
+    }
+
+    @Override
+    public void openDrink(int position, Drink drink) {
         Intent intent = new Intent(getActivity(), DrinkActivity.class);
         intent.putExtra(DrinkActivity.EXTRA_DRINK, drink);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -125,13 +129,18 @@ public class DrinksFragment extends Fragment implements SearchView.OnQueryTextLi
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        adapter.filter(newText);
+        presenter.filter(newText);
+        return false;
+    }
+
+    @Override
+    public void filter(String filter) {
+        adapter.filter(filter);
         if (adapter.getItemCount() == 0) {
             showEmptyView();
         } else {
             hideEmptyView();
         }
-        return false;
     }
 
     private void showEmptyView() {
@@ -150,9 +159,14 @@ public class DrinksFragment extends Fragment implements SearchView.OnQueryTextLi
 
     @Override
     public void onDestroyOptionsMenu() {
+        presenter.clearFilter();
+        super.onDestroyOptionsMenu();
+    }
+
+    @Override
+    public void clearFilter() {
         adapter.clearFilter();
         hideEmptyView();
-        super.onDestroyOptionsMenu();
     }
 
     @Override

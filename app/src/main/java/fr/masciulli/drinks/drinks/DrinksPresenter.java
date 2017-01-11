@@ -46,4 +46,19 @@ public class DrinksPresenter implements DrinksContract.Presenter {
     public void refreshDrinks() {
         loadDrinks();
     }
+
+    @Override
+    public void openDrink(int position, Drink drink) {
+        view.openDrink(position, drink);
+    }
+
+    @Override
+    public void filter(String filter) {
+        view.filter(filter);
+    }
+
+    @Override
+    public void clearFilter() {
+        view.clearFilter();
+    }
 }

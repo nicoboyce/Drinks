@@ -12,16 +12,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import fr.masciulli.drinks.DrinksApplication;
 import fr.masciulli.drinks.R;
 import fr.masciulli.drinks.drinks.DrinksPresenter;
-import fr.masciulli.drinks.model.Drink;
-import fr.masciulli.drinks.net.DrinksRepository;
-import fr.masciulli.drinks.ui.fragment.DrinksFragment;
+import fr.masciulli.drinks.drinks.DrinksFragment;
 import fr.masciulli.drinks.ui.fragment.LiquorsFragment;
-import rx.Observable;
 
 public class MainActivity extends AppCompatActivity {
     private static final int POSITION_DRINKS = 0;
@@ -40,12 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
         DrinksFragment drinksFragment = new DrinksFragment();
         //TODO create a real repository
-        DrinksPresenter drinksPresenter = new DrinksPresenter(new DrinksRepository() {
-            @Override
-            public Observable<List<Drink>> getDrinks() {
-                return Observable.just(new ArrayList<>());
-            }
-        }, drinksFragment);
+        DrinksPresenter drinksPresenter = new DrinksPresenter(() -> DrinksApplication.get(MainActivity.this).getClient().getDrinks(), drinksFragment);
         drinksFragment.setPresenter(drinksPresenter);
 
         pager.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
