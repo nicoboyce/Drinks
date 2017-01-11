@@ -133,21 +133,11 @@ public class DrinksFragment extends Fragment implements SearchView.OnQueryTextLi
         return false;
     }
 
-    @Override
-    public void filter(String filter) {
-        adapter.filter(filter);
-        if (adapter.getItemCount() == 0) {
-            showEmptyView();
-        } else {
-            hideEmptyView();
-        }
-    }
-
-    private void showEmptyView() {
+    private void showEmpty() {
         emptyView.setVisibility(View.VISIBLE);
     }
 
-    private void hideEmptyView() {
+    private void hideEmpty() {
         emptyView.setVisibility(View.GONE);
     }
 
@@ -161,12 +151,6 @@ public class DrinksFragment extends Fragment implements SearchView.OnQueryTextLi
     public void onDestroyOptionsMenu() {
         presenter.clearFilter();
         super.onDestroyOptionsMenu();
-    }
-
-    @Override
-    public void clearFilter() {
-        adapter.clearFilter();
-        hideEmptyView();
     }
 
     @Override

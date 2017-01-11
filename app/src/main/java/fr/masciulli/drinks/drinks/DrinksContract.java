@@ -19,7 +19,5 @@ public interface DrinksContract {
         void showLoadingError();
         void showLoading();
         void openDrink(int position, Drink drink);
-        void filter(String filter);
-        void clearFilter();
     }
 }

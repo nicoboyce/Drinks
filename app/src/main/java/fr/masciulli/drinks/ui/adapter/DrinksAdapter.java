@@ -12,7 +12,6 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import fr.masciulli.drinks.R;
@@ -28,7 +27,6 @@ public class DrinksAdapter extends RecyclerView.Adapter<TileViewHolder> {
     private static final float RATIO_43 = 4.0f / 3.0f;
 
     private List<Drink> drinks = new ArrayList<>();
-    private List<Drink> filteredDrinks = new ArrayList<>();
     private Map<Drink, Integer> ratioMap = new HashMap<>();
 
     private ItemClickListener<Drink> listener;
@@ -43,7 +41,7 @@ public class DrinksAdapter extends RecyclerView.Adapter<TileViewHolder> {
 
     @Override
     public void onBindViewHolder(final TileViewHolder holder, int position) {
-        final Drink drink = filteredDrinks.get(position);
+        final Drink drink = drinks.get(position);
         holder.getNameView().setText(drink.name());
 
         RatioImageView imageView = holder.getImageView();
@@ -74,7 +72,7 @@ public class DrinksAdapter extends RecyclerView.Adapter<TileViewHolder> {
 
     @Override
     public int getItemCount() {
-        return filteredDrinks.size();
+        return drinks.size();
     }
 
     @Override
@@ -88,11 +86,8 @@ public class DrinksAdapter extends RecyclerView.Adapter<TileViewHolder> {
     }
 
     public void setDrinks(List<Drink> drinks) {
-        filteredDrinks.clear();
         this.drinks.clear();
-
         this.drinks.addAll(drinks);
-        filteredDrinks.addAll(drinks);
 
         fakeRatios();
         notifyDataSetChanged();
@@ -104,30 +99,6 @@ public class DrinksAdapter extends RecyclerView.Adapter<TileViewHolder> {
             Drink drink = drinks.get(i);
             ratioMap.put(drink, i % 2 == 0 ? TYPE_34 : TYPE_43);
         }
-    }
-
-    public void filter(String text) {
-        filteredDrinks.clear();
-        text = text.toLowerCase(Locale.US);
-        for (Drink drink : drinks) {
-            if (drink.name().toLowerCase(Locale.US).contains(text)) {
-                filteredDrinks.add(drink);
-            } else {
-                for (String ingredient : drink.ingredients()) {
-                    if (ingredient.toLowerCase(Locale.US).contains(text)) {
-                        filteredDrinks.add(drink);
-                        break;
-                    }
-                }
-            }
-        }
-        notifyDataSetChanged();
-    }
-
-    public void clearFilter() {
-        filteredDrinks.clear();
-        filteredDrinks.addAll(drinks);
-        notifyDataSetChanged();
     }
 
     public ArrayList<Drink> getDrinks() {

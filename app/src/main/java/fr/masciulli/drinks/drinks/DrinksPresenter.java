@@ -3,9 +3,11 @@ package fr.masciulli.drinks.drinks;
 import android.util.Log;
 
 import java.util.List;
+import java.util.Locale;
 
 import fr.masciulli.drinks.model.Drink;
 import fr.masciulli.drinks.net.DrinksRepository;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -54,11 +56,30 @@ public class DrinksPresenter implements DrinksContract.Presenter {
 
     @Override
     public void filter(String filter) {
-        view.filter(filter);
+        drinksRepository.getDrinks()
+                .flatMap(Observable::from)
+                .filter(drink -> drinkMatchesFilter(drink, filter))
+                .toList()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::drinksLoaded, this::errorLoadingDrinks);
     }
 
     @Override
     public void clearFilter() {
-        view.clearFilter();
+        loadDrinks();
+    }
+
+    private boolean drinkMatchesFilter(Drink drink, String filter) {
+        if (drink.name().toLowerCase(Locale.US).contains(filter.toLowerCase())) {
+            return true;
+        } else {
+            for (String ingredient : drink.ingredients()) {
+                if (ingredient.toLowerCase(Locale.US).contains(filter)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
