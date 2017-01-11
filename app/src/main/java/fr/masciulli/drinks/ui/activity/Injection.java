@@ -3,6 +3,9 @@ package fr.masciulli.drinks.ui.activity;
 import fr.masciulli.drinks.net.Client;
 import fr.masciulli.drinks.net.drinks.DrinksRepository;
 import fr.masciulli.drinks.net.liquors.LiquorsRepository;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public final class Injection {
     private Injection() {
@@ -15,5 +18,13 @@ public final class Injection {
 
     public static LiquorsRepository provideLiquorsRepository() {
         return LiquorsRepository.getInstance(Client.getInstance());
+    }
+
+    public static Scheduler provideSubscribeScheduler() {
+        return Schedulers.newThread();
+    }
+
+    public static Scheduler provideObserveScheduler() {
+        return AndroidSchedulers.mainThread();
     }
 }

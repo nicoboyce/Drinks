@@ -37,7 +37,11 @@ public class MainActivity extends AppCompatActivity {
         DrinksFragment drinksFragment = retrieveOrCreateDrinksFragment();
         LiquorsFragment liquorsFragment = retrieveOrCreateLiquorsFragment();
 
-        DrinksPresenter drinksPresenter = new DrinksPresenter(Injection.provideDrinksRepository(), drinksFragment);
+        DrinksPresenter drinksPresenter = new DrinksPresenter(Injection.provideDrinksRepository(),
+                drinksFragment,
+                Injection.provideSubscribeScheduler(),
+                Injection.provideObserveScheduler()
+                );
         drinksFragment.setPresenter(drinksPresenter);
 
         LiquorsPresenter liquorsPresenter = new LiquorsPresenter(Injection.provideLiquorsRepository(), liquorsFragment);
