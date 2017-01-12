@@ -7,8 +7,6 @@ import fr.masciulli.drinks.model.Drink;
 import fr.masciulli.drinks.net.drinks.DrinksRepository;
 import rx.Observable;
 import rx.Scheduler;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class DrinksPresenter implements DrinksContract.Presenter {
@@ -67,8 +65,8 @@ public class DrinksPresenter implements DrinksContract.Presenter {
                 .flatMap(Observable::from)
                 .filter(drink -> drinkMatchesFilter(drink, filter))
                 .toList()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(subscribeScheduler)
+                .observeOn(observeScheduler)
                 .subscribe(this::drinksLoaded, this::errorLoadingDrinks);
     }
 
