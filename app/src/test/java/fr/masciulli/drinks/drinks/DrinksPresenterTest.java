@@ -22,11 +22,11 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class DrinksPresenterTest {
     private DrinksPresenter presenter;
     @Mock
-    public DrinksRepository drinksRepository;
+    private DrinksRepository drinksRepository;
     @Mock
-    public DrinksContract.View drinksView;
+    private DrinksContract.View drinksView;
     @Mock
-    public Scheduler scheduler;
+    private Scheduler scheduler;
 
     private List<Drink> drinks = new ArrayList<>();
 

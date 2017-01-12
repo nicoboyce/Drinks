@@ -47,7 +47,7 @@ public class DrinksPresenter implements DrinksContract.Presenter {
     }
 
     private void errorLoadingDrinks(Throwable throwable) {
-        Timber.e("Error loading drinks", throwable);
+        Timber.e(throwable, "Error loading drinks");
         view.showLoadingError();
     }
 

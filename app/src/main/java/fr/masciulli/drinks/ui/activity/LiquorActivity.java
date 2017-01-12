@@ -120,7 +120,7 @@ public class LiquorActivity extends AppCompatActivity {
     }
 
     private void onError(Throwable throwable) {
-        Timber.e("Couldn't retrieve liquors", throwable);
+        Timber.e(throwable, "Couldn't retrieve liquors");
     }
 
     private void onDrinksRetrieved(List<Drink> drinks) {
