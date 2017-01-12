@@ -11,8 +11,6 @@ import fr.masciulli.drinks.model.Drink;
 import fr.masciulli.drinks.net.drinks.DrinksRepository;
 import rx.Observable;
 import rx.Scheduler;
-import rx.android.plugins.RxAndroidPlugins;
-import rx.android.plugins.RxAndroidSchedulersHook;
 import rx.schedulers.Schedulers;
 
 import static org.mockito.Mockito.verify;
@@ -34,13 +32,6 @@ public class DrinksPresenterTest {
     public void setUp() {
         initMocks(this);
         when(drinksRepository.getDrinks()).thenReturn(Observable.just(drinks));
-
-        RxAndroidPlugins.getInstance().registerSchedulersHook(new RxAndroidSchedulersHook() {
-            @Override
-            public Scheduler getMainThreadScheduler() {
-                return scheduler;
-            }
-        });
 
         presenter = new DrinksPresenter(drinksRepository, drinksView, Schedulers.immediate(), Schedulers.immediate());
     }
