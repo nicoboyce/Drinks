@@ -30,12 +30,29 @@ public class DrinksPresenterTest {
     @Captor
     private ArgumentCaptor<List<Drink>> drinksCaptor;
 
-    private static final Drink DRINK =
-            Drink.create("name", "http://url.com/image.jpg", "history", "http://wikipedia.org/wiki", "instructions", Arrays.asList("an ingredient"));
-    private static final Drink DRINK1 =
-            Drink.create("another Name", "http://url.com/image.jpg", "history", "http://wikipedia.org/wiki", "instructions", new ArrayList<>());
-    private static final Drink DRINK2 =
-            Drink.create("something Else", "http://url.com/image.jpg", "history", "http://wikipedia.org/wiki", "instructions", Arrays.asList("an ingredient"));
+    private static final Drink DRINK = Drink.create(
+            "name",
+            "http://url.com/image.jpg",
+            "history",
+            "http://wikipedia.org/wiki",
+            "instructions",
+            Arrays.asList("an ingredient"));
+
+    private static final Drink DRINK1 = Drink.create(
+            "another Name",
+            "http://url.com/image.jpg",
+            "history",
+            "http://wikipedia.org/wiki",
+            "instructions",
+            new ArrayList<>());
+
+    private static final Drink DRINK2 = Drink.create(
+            "something Else",
+            "http://url.com/image.jpg",
+            "history",
+            "http://wikipedia.org/wiki",
+            "instructions",
+            Arrays.asList("an ingredient"));
 
     private static final List<Drink> DRINKS = Arrays.asList(DRINK, DRINK1, DRINK2);
 
@@ -114,7 +131,18 @@ public class DrinksPresenterTest {
     }
 
     @Test
-    public void testThatClearFilter() {
+    public void testThatFilterCallsViewShowEmptyIfNoMatchingDrinks() {
+        presenter.filter("thisdoesntmatchanything");
+        verify(drinksView).showDrinks(drinksCaptor.capture());
+        verify(drinksView).showEmpty();
+
+        List<Drink> filteredDrinks = drinksCaptor.getValue();
+        assertThat(filteredDrinks).isEmpty();
+    }
+
+    @Test
+    public void testThatClearFilterShowsAllDrinks() {
+        presenter.filter("thisdoesntmatchanything");
         presenter.clearFilter();
         verify(drinksView).showDrinks(DRINKS);
     }
