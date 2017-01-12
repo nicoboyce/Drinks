@@ -5,8 +5,6 @@ import java.util.List;
 import fr.masciulli.drinks.model.Liquor;
 import fr.masciulli.drinks.net.liquors.LiquorsRepository;
 import rx.Scheduler;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class LiquorsPresenter implements LiquorsContract.Presenter {
