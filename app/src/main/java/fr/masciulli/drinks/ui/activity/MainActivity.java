@@ -44,7 +44,10 @@ public class MainActivity extends AppCompatActivity {
                 );
         drinksFragment.setPresenter(drinksPresenter);
 
-        LiquorsPresenter liquorsPresenter = new LiquorsPresenter(Injection.provideLiquorsRepository(), liquorsFragment);
+        LiquorsPresenter liquorsPresenter = new LiquorsPresenter(Injection.provideLiquorsRepository(),
+                liquorsFragment,
+                Injection.provideSubscribeScheduler(),
+                Injection.provideObserveScheduler());
         liquorsFragment.setPresenter(liquorsPresenter);
 
         pager.setAdapter(new DrinksFragmentPagerAdapter(getSupportFragmentManager(), drinksFragment, liquorsFragment));

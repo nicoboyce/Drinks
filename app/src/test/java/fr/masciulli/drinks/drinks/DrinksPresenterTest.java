@@ -13,7 +13,6 @@ import java.util.List;
 import fr.masciulli.drinks.model.Drink;
 import fr.masciulli.drinks.net.drinks.DrinksRepository;
 import rx.Observable;
-import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,8 +26,6 @@ public class DrinksPresenterTest {
     private DrinksRepository drinksRepository;
     @Mock
     private DrinksContract.View drinksView;
-    @Mock
-    private Scheduler scheduler;
 
     @Captor
     private ArgumentCaptor<List<Drink>> drinksCaptor;
@@ -54,8 +51,8 @@ public class DrinksPresenterTest {
     public void testThatStartRetrievesDrinksAndPassesThemToView() {
         presenter.start();
 
-        verify(drinksRepository).getDrinks();
         verify(drinksView).showLoading();
+        verify(drinksRepository).getDrinks();
         verify(drinksView).showDrinks(DRINKS);
     }
 
@@ -66,8 +63,8 @@ public class DrinksPresenterTest {
 
         presenter.start();
 
-        verify(drinksRepository).getDrinks();
         verify(drinksView).showLoading();
+        verify(drinksRepository).getDrinks();
         verify(drinksView).showLoadingError();
     }
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import fr.masciulli.drinks.model.Liquor;
 import fr.masciulli.drinks.net.liquors.LiquorsRepository;
+import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -11,10 +12,14 @@ import timber.log.Timber;
 public class LiquorsPresenter implements LiquorsContract.Presenter {
     private final LiquorsRepository liquorsRepository;
     private final LiquorsContract.View view;
+    private final Scheduler subscribeScheduler;
+    private final Scheduler observeScheduler;
 
-    public LiquorsPresenter(LiquorsRepository liquorsRepository, LiquorsContract.View view) {
+    public LiquorsPresenter(LiquorsRepository liquorsRepository, LiquorsContract.View view, Scheduler subscribeScheduler, Scheduler observeScheduler) {
         this.liquorsRepository = liquorsRepository;
         this.view = view;
+        this.subscribeScheduler = subscribeScheduler;
+        this.observeScheduler = observeScheduler;
     }
 
     @Override
@@ -25,8 +30,8 @@ public class LiquorsPresenter implements LiquorsContract.Presenter {
     private void loadLiquors() {
         view.showLoading();
         liquorsRepository.getLiquors()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(subscribeScheduler)
+                .observeOn(observeScheduler)
                 .subscribe(this::liquorsLoaded, this::errorLoadingLiquors);
     }
 
