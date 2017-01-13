@@ -10,6 +10,7 @@ import auto.parcelgson.gson.AutoParcelGsonTypeAdapterFactory;
 import fr.masciulli.drinks.BuildConfig;
 import fr.masciulli.drinks.model.Drink;
 import fr.masciulli.drinks.model.Liquor;
+import fr.masciulli.drinks.net.drinks.ReadableDrinksDataSource;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -17,7 +18,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 
-public class Client {
+public class Client implements ReadableDrinksDataSource {
     private static final String SERVER_BASE_URL = "http://drinks-api.appspot.com";
 
     private static Client instance;
@@ -54,6 +55,7 @@ public class Client {
                 .create(WebApi.class);
     }
 
+    @Override
     public Observable<List<Drink>> getDrinks() {
         return retrofit.getDrinks();
     }

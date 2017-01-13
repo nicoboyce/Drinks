@@ -3,26 +3,30 @@ package fr.masciulli.drinks.net.drinks;
 import java.util.List;
 
 import fr.masciulli.drinks.model.Drink;
-import fr.masciulli.drinks.net.Client;
 import rx.Observable;
 
-public class DrinksRepository implements DrinksDataSource {
-    private final Client client;
+public class DrinksRepository implements ReadableDrinksDataSource {
     private static DrinksRepository instance;
 
-    public static DrinksRepository getInstance(Client client) {
+    private final ReadableDrinksDataSource remoteSource;
+    private final WritableDrinksDataSource localSource;
+
+    public static DrinksRepository getInstance(ReadableDrinksDataSource remoteSource, WritableDrinksDataSource localSource) {
         if (instance == null) {
-            instance = new DrinksRepository(client);
+            instance = new DrinksRepository(remoteSource, localSource);
         }
         return instance;
     }
 
-    DrinksRepository(Client client) {
-        this.client = client;
+    DrinksRepository(ReadableDrinksDataSource remoteSource, WritableDrinksDataSource localSource) {
+        this.remoteSource = remoteSource;
+        this.localSource = localSource;
     }
 
     @Override
     public Observable<List<Drink>> getDrinks() {
-        return client.getDrinks();
+        return remoteSource.getDrinks()
+                .flatMap(localSource::putDrinks)
+                .onErrorResumeNext(localSource.getDrinks());
     }
 }

@@ -5,6 +5,6 @@ import java.util.List;
 import fr.masciulli.drinks.model.Drink;
 import rx.Observable;
 
-public interface DrinksDataSource {
+public interface ReadableDrinksDataSource {
     Observable<List<Drink>> getDrinks();
 }

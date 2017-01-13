@@ -2,6 +2,7 @@ package fr.masciulli.drinks.ui.activity;
 
 import fr.masciulli.drinks.net.Client;
 import fr.masciulli.drinks.net.drinks.DrinksRepository;
+import fr.masciulli.drinks.net.drinks.LocalDrinksDataSource;
 import fr.masciulli.drinks.net.liquors.LiquorsRepository;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
@@ -13,7 +14,7 @@ public final class Injection {
     }
 
     public static DrinksRepository provideDrinksRepository() {
-        return DrinksRepository.getInstance(Client.getInstance());
+        return DrinksRepository.getInstance(Client.getInstance(), LocalDrinksDataSource.getInstance());
     }
 
     public static LiquorsRepository provideLiquorsRepository() {
