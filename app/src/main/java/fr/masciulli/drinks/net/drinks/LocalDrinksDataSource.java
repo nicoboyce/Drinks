@@ -24,6 +24,6 @@ public class LocalDrinksDataSource implements WritableDrinksDataSource {
     @Override
     public Observable<List<Drink>> putDrinks(List<Drink> drinks) {
         //TODO implement
-        return null;
+        return Observable.just(drinks);
     }
 }

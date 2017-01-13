@@ -4,6 +4,7 @@ import fr.masciulli.drinks.net.Client;
 import fr.masciulli.drinks.net.drinks.DrinksRepository;
 import fr.masciulli.drinks.net.drinks.LocalDrinksDataSource;
 import fr.masciulli.drinks.net.liquors.LiquorsRepository;
+import fr.masciulli.drinks.net.liquors.LocalLiquorsDataSource;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -18,7 +19,7 @@ public final class Injection {
     }
 
     public static LiquorsRepository provideLiquorsRepository() {
-        return LiquorsRepository.getInstance(Client.getInstance());
+        return LiquorsRepository.getInstance(Client.getInstance(), LocalLiquorsDataSource.getInstance());
     }
 
     public static Scheduler provideSubscribeScheduler() {
