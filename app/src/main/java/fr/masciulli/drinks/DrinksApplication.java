@@ -2,8 +2,10 @@ package fr.masciulli.drinks;
 
 import android.app.Application;
 import android.content.Context;
+
 import com.facebook.stetho.Stetho;
 import com.squareup.leakcanary.LeakCanary;
+
 import fr.masciulli.drinks.net.Client;
 import timber.log.Timber;
 

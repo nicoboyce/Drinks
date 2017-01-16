@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.widget.TextView;
-import fr.masciulli.drinks.BuildConfig;
-import fr.masciulli.drinks.R;
 
 public class AboutActivity extends AppCompatActivity {
     @Override
