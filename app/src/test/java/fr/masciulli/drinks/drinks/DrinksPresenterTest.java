@@ -30,7 +30,7 @@ public class DrinksPresenterTest {
     @Captor
     private ArgumentCaptor<List<Drink>> drinksCaptor;
 
-    private static final Drink DRINK = Drink.create(
+    private static final Drink DRINK = new Drink(
             "name",
             "http://url.com/image.jpg",
             "history",
@@ -38,7 +38,7 @@ public class DrinksPresenterTest {
             "instructions",
             Arrays.asList("an ingredient"));
 
-    private static final Drink DRINK1 = Drink.create(
+    private static final Drink DRINK1 = new Drink(
             "another Name",
             "http://url.com/image.jpg",
             "history",
@@ -46,7 +46,7 @@ public class DrinksPresenterTest {
             "instructions",
             new ArrayList<>());
 
-    private static final Drink DRINK2 = Drink.create(
+    private static final Drink DRINK2 = new Drink(
             "something Else",
             "http://url.com/image.jpg",
             "history",

@@ -60,7 +60,7 @@ public class LiquorActivity extends AppCompatActivity {
         Client.getInstance()
                 .getLiquors()
                 .flatMap(Observable::from)
-                .filter(liquor -> liquor.name().equals(liquorName))
+                .filter(liquor -> liquor.getName().equals(liquorName))
                 .single()
                 .map(this::loadDrinks)
                 .subscribeOn(Schedulers.newThread())
@@ -83,10 +83,10 @@ public class LiquorActivity extends AppCompatActivity {
 
     private void bindViews(Liquor liquor) {
         this.liquor = liquor;
-        setTitle(liquor.name());
+        setTitle(liquor.getName());
         ImageView imageView = (ImageView) findViewById(R.id.image);
         Picasso.with(this)
-                .load(liquor.imageUrl())
+                .load(liquor.getImageUrl())
                 .noFade()
                 .into(imageView, new EnterPostponeTransitionCallback(this));
 
@@ -108,14 +108,14 @@ public class LiquorActivity extends AppCompatActivity {
 
     private void onWikipediaClick() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(liquor.wikipedia()));
+        intent.setData(Uri.parse(liquor.getWikipedia()));
         startActivity(intent);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void onDrinkClick(int position, Drink drink) {
         Intent intent = new Intent(this, DrinkActivity.class);
-        intent.putExtra(DrinkActivity.EXTRA_DRINK, drink.name());
+        intent.putExtra(DrinkActivity.EXTRA_DRINK, drink.getName());
         if (TRANSITIONS_AVAILABLE) {
             TileViewHolder holder = (TileViewHolder) recyclerView.findViewHolderForAdapterPosition(position);
             String transition = getString(R.string.transition_drink);
@@ -136,12 +136,12 @@ public class LiquorActivity extends AppCompatActivity {
     }
 
     private boolean matches(Drink drink) {
-        for (String ingredient : drink.ingredients()) {
+        for (String ingredient : drink.getIngredients()) {
             String lowerCaseIngredient = ingredient.toLowerCase(Locale.US);
-            if (lowerCaseIngredient.contains(liquor.name().toLowerCase(Locale.US))) {
+            if (lowerCaseIngredient.contains(liquor.getName().toLowerCase(Locale.US))) {
                 return true;
             }
-            for (String name : liquor.otherNames()) {
+            for (String name : liquor.getOtherNames()) {
                 if (lowerCaseIngredient.contains(name.toLowerCase(Locale.US))) {
                     return true;
                 }

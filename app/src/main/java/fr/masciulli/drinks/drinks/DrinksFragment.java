@@ -96,7 +96,7 @@ public class DrinksFragment extends Fragment implements SearchView.OnQueryTextLi
     @Override
     public void openDrink(int position, Drink drink) {
         Intent intent = new Intent(getActivity(), DrinkActivity.class);
-        intent.putExtra(DrinkActivity.EXTRA_DRINK, drink.name());
+        intent.putExtra(DrinkActivity.EXTRA_DRINK, drink.getName());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             TileViewHolder holder = (TileViewHolder) recyclerView.findViewHolderForAdapterPosition(position);
             String transition = getString(R.string.transition_drink);

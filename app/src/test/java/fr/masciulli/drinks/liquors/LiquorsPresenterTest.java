@@ -19,7 +19,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class LiquorsPresenterTest {
 
     private static final Liquor LIQUOR =
-            Liquor.create("name", "http://url.com/image.jpg", "http://en.wikipedia.org/wiki", "history", Arrays.asList("ingredient"));
+            new Liquor("name", "http://url.com/image.jpg", "http://en.wikipedia.org/wiki", "history", Arrays.asList("ingredient"));
 
     private static final List<Liquor> LIQUORS = Arrays.asList(LIQUOR);
 

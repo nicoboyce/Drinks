@@ -1,12 +1,9 @@
 package fr.masciulli.drinks.net;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.util.List;
 
-import auto.parcelgson.gson.AutoParcelGsonTypeAdapterFactory;
 import fr.masciulli.drinks.BuildConfig;
 import fr.masciulli.drinks.model.Drink;
 import fr.masciulli.drinks.model.Liquor;
@@ -43,15 +40,11 @@ public class Client implements ReadableDrinksDataSource, ReadableLiquorsDataSour
             clientBuilder.addInterceptor(loggingInterceptor);
         }
 
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapterFactory(new AutoParcelGsonTypeAdapterFactory())
-                .create();
-
         retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .client(clientBuilder.build())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(WebApi.class);
     }

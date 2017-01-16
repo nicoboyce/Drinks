@@ -76,10 +76,10 @@ public class DrinksPresenter implements DrinksContract.Presenter {
     }
 
     private boolean drinkMatchesFilter(Drink drink, String filter) {
-        if (drink.name().toLowerCase(Locale.US).contains(filter.toLowerCase())) {
+        if (drink.getName().toLowerCase(Locale.US).contains(filter.toLowerCase())) {
             return true;
         } else {
-            for (String ingredient : drink.ingredients()) {
+            for (String ingredient : drink.getIngredients()) {
                 if (ingredient.toLowerCase(Locale.US).contains(filter)) {
                     return true;
                 }

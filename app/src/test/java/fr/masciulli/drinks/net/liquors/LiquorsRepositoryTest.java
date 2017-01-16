@@ -23,9 +23,9 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class LiquorsRepositoryTest {
     private static final Liquor LIQUOR =
-            Liquor.create("name", "http://url.com/image.jpg", "http://en.wikipedia.org/wiki", "history", Arrays.asList("ingredient"));
+            new Liquor("name", "http://url.com/image.jpg", "http://en.wikipedia.org/wiki", "history", Arrays.asList("ingredient"));
     private static final Liquor LIQUOR1 =
-            Liquor.create("another name", "http://url.com/image.jpg", "http://en.wikipedia.org/wiki", "history", Arrays.asList("ingredient"));
+            new Liquor("another name", "http://url.com/image.jpg", "http://en.wikipedia.org/wiki", "history", Arrays.asList("ingredient"));
 
     private static final List<Liquor> REMOTE_LIQUORS = Arrays.asList(LIQUOR);
     private static final List<Liquor> LOCAL_LIQUORS = Arrays.asList(LIQUOR1);

@@ -1,24 +1,45 @@
 package fr.masciulli.drinks.model;
 
-import auto.parcelgson.AutoParcelGson;
-
 import java.util.List;
 
-@AutoParcelGson
-public abstract class Drink {
-    public abstract String name();
+public class Drink {
+    private String name;
+    private String imageUrl;
+    private String history;
+    private String wikipedia;
+    private String instructions;
+    private List<String> ingredients;
 
-    public abstract String imageUrl();
+    public Drink(String name, String imageUrl, String history, String wikipedia, String instructions, List<String> ingredients) {
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.history = history;
+        this.wikipedia = wikipedia;
+        this.instructions = instructions;
+        this.ingredients = ingredients;
+    }
 
-    public abstract String history();
+    public String getName() {
+        return name;
+    }
 
-    public abstract String wikipedia();
+    public String getImageUrl() {
+        return imageUrl;
+    }
 
-    public abstract String instructions();
+    public String getHistory() {
+        return history;
+    }
 
-    public abstract List<String> ingredients();
+    public String getWikipedia() {
+        return wikipedia;
+    }
 
-    public static Drink create(String name, String imageUrl, String history, String wikipedia, String instructions, List<String> ingredients) {
-        return new AutoParcelGson_Drink(name, imageUrl, history, wikipedia, instructions, ingredients);
+    public String getInstructions() {
+        return instructions;
+    }
+
+    public List<String> getIngredients() {
+        return ingredients;
     }
 }
