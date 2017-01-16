@@ -17,8 +17,6 @@ import fr.masciulli.drinks.drinks.DrinksFragment;
 import fr.masciulli.drinks.drinks.DrinksPresenter;
 import fr.masciulli.drinks.liquors.LiquorsFragment;
 import fr.masciulli.drinks.liquors.LiquorsPresenter;
-import fr.masciulli.drinks.ui.activity.AboutActivity;
-import fr.masciulli.drinks.ui.activity.LicensesActivity;
 
 public class MainActivity extends AppCompatActivity {
     private static final int POSITION_DRINKS = 0;

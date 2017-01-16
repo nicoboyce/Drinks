@@ -18,7 +18,6 @@ import fr.masciulli.drinks.R;
 import fr.masciulli.drinks.model.Liquor;
 import fr.masciulli.drinks.ui.activity.LiquorActivity;
 import fr.masciulli.drinks.ui.adapter.ItemClickListener;
-import fr.masciulli.drinks.ui.adapter.LiquorsAdapter;
 import fr.masciulli.drinks.ui.adapter.holder.TileViewHolder;
 
 public class LiquorsFragment extends Fragment implements ItemClickListener<Liquor>, LiquorsContract.View {
