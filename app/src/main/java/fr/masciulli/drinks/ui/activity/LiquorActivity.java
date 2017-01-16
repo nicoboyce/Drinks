@@ -13,7 +13,9 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
-import fr.masciulli.drinks.DrinksApplication;
+import java.util.List;
+import java.util.Locale;
+
 import fr.masciulli.drinks.R;
 import fr.masciulli.drinks.model.Drink;
 import fr.masciulli.drinks.model.Liquor;
@@ -26,16 +28,12 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-import java.util.List;
-import java.util.Locale;
-
 public class LiquorActivity extends AppCompatActivity {
     private static final boolean TRANSITIONS_AVAILABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     public static final String EXTRA_LIQUOR = "extra_liquor";
-    private static final String STATE_DRINKS = "state_drinks";
 
     private Liquor liquor;
-    private Client client;
+
     private LiquorRelatedAdapter adapter;
 
     private RecyclerView recyclerView;
@@ -49,16 +47,43 @@ public class LiquorActivity extends AppCompatActivity {
             postponeEnterTransition();
         }
 
-        liquor = getIntent().getParcelableExtra(EXTRA_LIQUOR);
-        client = DrinksApplication.get(this).getClient();
-
         setContentView(R.layout.activity_liquor);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle(liquor.name());
 
+        loadLiquor(getIntent().getStringExtra(EXTRA_LIQUOR));
+    }
+
+    private void loadLiquor(String liquorName) {
+        Client.getInstance()
+                .getLiquors()
+                .flatMap(Observable::from)
+                .filter(liquor -> liquor.name().equals(liquorName))
+                .single()
+                .map(this::loadDrinks)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::bindViews);
+    }
+
+    private Liquor loadDrinks(Liquor liquor) {
+        Client.getInstance()
+                .getDrinks()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(this::onError)
+                .flatMap(Observable::from)
+                .filter(this::matches)
+                .toList()
+                .subscribe(this::onDrinksRetrieved);
+        return liquor;
+    }
+
+    private void bindViews(Liquor liquor) {
+        this.liquor = liquor;
+        setTitle(liquor.name());
         ImageView imageView = (ImageView) findViewById(R.id.image);
         Picasso.with(this)
                 .load(liquor.imageUrl())
@@ -68,7 +93,6 @@ public class LiquorActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
         setupRecyclerView();
 
-        loadDrinks();
     }
 
     private void setupRecyclerView() {
@@ -91,7 +115,7 @@ public class LiquorActivity extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void onDrinkClick(int position, Drink drink) {
         Intent intent = new Intent(this, DrinkActivity.class);
-        //intent.putExtra(DrinkActivity.EXTRA_DRINK, drink);
+        intent.putExtra(DrinkActivity.EXTRA_DRINK, drink.name());
         if (TRANSITIONS_AVAILABLE) {
             TileViewHolder holder = (TileViewHolder) recyclerView.findViewHolderForAdapterPosition(position);
             String transition = getString(R.string.transition_drink);
@@ -101,17 +125,6 @@ public class LiquorActivity extends AppCompatActivity {
         } else {
             startActivity(intent);
         }
-    }
-
-    private void loadDrinks() {
-        client.getDrinks()
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnError(this::onError)
-                .flatMap(Observable::from)
-                .filter(this::matches)
-                .toList()
-                .subscribe(this::onDrinksRetrieved);
     }
 
     private void onError(Throwable throwable) {

@@ -1,12 +1,11 @@
 package fr.masciulli.drinks.model;
 
-import android.os.Parcelable;
-import auto.parcelgson.AutoParcelGson;
-
 import java.util.List;
 
+import auto.parcelgson.AutoParcelGson;
+
 @AutoParcelGson
-public abstract class Liquor implements Parcelable {
+public abstract class Liquor {
     public abstract String name();
 
     public abstract String imageUrl();

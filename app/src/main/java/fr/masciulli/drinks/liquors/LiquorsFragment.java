@@ -22,8 +22,6 @@ import fr.masciulli.drinks.ui.adapter.LiquorsAdapter;
 import fr.masciulli.drinks.ui.adapter.holder.TileViewHolder;
 
 public class LiquorsFragment extends Fragment implements ItemClickListener<Liquor>, LiquorsContract.View {
-    private static final String STATE_LIQUORS = "state_liquors";
-
     private LiquorsContract.Presenter presenter;
 
     private RecyclerView recyclerView;
@@ -52,12 +50,7 @@ public class LiquorsFragment extends Fragment implements ItemClickListener<Liquo
         recyclerView.setLayoutManager(adapter.craftLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
 
-        if (savedInstanceState == null) {
-            presenter.start();
-        } else {
-            List<Liquor> liquors = savedInstanceState.getParcelableArrayList(STATE_LIQUORS);
-            showLiquors(liquors);
-        }
+        presenter.start();
 
         return rootView;
     }
@@ -70,7 +63,7 @@ public class LiquorsFragment extends Fragment implements ItemClickListener<Liquo
     @Override
     public void openLiquor(int position, Liquor liquor) {
         Intent intent = new Intent(getActivity(), LiquorActivity.class);
-        intent.putExtra(LiquorActivity.EXTRA_LIQUOR, liquor);
+        intent.putExtra(LiquorActivity.EXTRA_LIQUOR, liquor.name());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             TileViewHolder holder = (TileViewHolder) recyclerView.findViewHolderForAdapterPosition(position);
             String transition = getString(R.string.transition_liquor);
@@ -80,12 +73,6 @@ public class LiquorsFragment extends Fragment implements ItemClickListener<Liquo
         } else {
             startActivity(intent);
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(STATE_LIQUORS, adapter.getLiquors());
     }
 
     @Override
