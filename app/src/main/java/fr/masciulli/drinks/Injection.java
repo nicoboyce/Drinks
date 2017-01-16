@@ -1,4 +1,4 @@
-package fr.masciulli.drinks.ui.activity;
+package fr.masciulli.drinks;
 
 import fr.masciulli.drinks.net.Client;
 import fr.masciulli.drinks.net.drinks.DrinksRepository;

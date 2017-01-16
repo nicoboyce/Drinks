@@ -1,4 +1,4 @@
-package fr.masciulli.drinks.ui.activity;
+package fr.masciulli.drinks;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -13,11 +13,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import fr.masciulli.drinks.Injection;
 import fr.masciulli.drinks.R;
 import fr.masciulli.drinks.drinks.DrinksFragment;
 import fr.masciulli.drinks.drinks.DrinksPresenter;
 import fr.masciulli.drinks.liquors.LiquorsFragment;
 import fr.masciulli.drinks.liquors.LiquorsPresenter;
+import fr.masciulli.drinks.ui.activity.AboutActivity;
+import fr.masciulli.drinks.ui.activity.LicensesActivity;
 
 public class MainActivity extends AppCompatActivity {
     private static final int POSITION_DRINKS = 0;
