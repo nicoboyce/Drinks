@@ -18,6 +18,7 @@ import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,7 +56,7 @@ public class DrinksRepositoryTest {
     @Captor
     private ArgumentCaptor<List<Drink>> drinksCaptor;
 
-    private DrinksRepository drinksRepository;
+    private DrinksRepository repository;
     @Mock
     private ReadableDrinksDataSource remoteSource;
     @Mock
@@ -75,14 +76,14 @@ public class DrinksRepositoryTest {
             }
         });
 
-        drinksRepository = new DrinksRepository(remoteSource, localSource);
+        repository = new DrinksRepository(remoteSource, localSource);
     }
 
     @Test
     public void testThatGetDrinksRetrievesFromRemoteAndPutsInLocal() {
         TestSubscriber<List<Drink>> testSubscriber = new TestSubscriber<>();
 
-        drinksRepository.getDrinks()
+        repository.getDrinks()
                 .subscribe(testSubscriber);
         List<Drink> result = testSubscriber.getOnNextEvents().get(0);
 
@@ -92,11 +93,26 @@ public class DrinksRepositoryTest {
     }
 
     @Test
+    public void testThatGetDrinksRetrievesFromCacheIfDrinksAlreadyLoaded() {
+        TestSubscriber<List<Drink>> remoteSubscriber = new TestSubscriber<>();
+        repository.getDrinks()
+                .subscribe(remoteSubscriber);
+        TestSubscriber<List<Drink>> cacheSubscriber = new TestSubscriber<>();
+        repository.getDrinks()
+                .subscribe(cacheSubscriber);
+        List<Drink> result = cacheSubscriber.getOnNextEvents().get(0);
+
+        remoteSubscriber.assertNoErrors();
+        assertThat(result).isEqualTo(REMOTE_DRINKS);
+        verify(remoteSource, atMost(1)).getDrinks();
+    }
+
+    @Test
     public void testThatGetDrinksRetrievesFromLocalAndDoesntPutInLocalIfRemoteError() {
         when(remoteSource.getDrinks()).thenReturn(Observable.error(new RuntimeException("Something bad happened!")));
         TestSubscriber<List<Drink>> testSubscriber = new TestSubscriber<>();
 
-        drinksRepository.getDrinks()
+        repository.getDrinks()
                 .subscribe(testSubscriber);
         List<Drink> result = testSubscriber.getOnNextEvents().get(0);
 

@@ -15,6 +15,7 @@ import rx.observers.TestSubscriber;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,7 +27,7 @@ public class LiquorsRepositoryTest {
     private static final Liquor LIQUOR1 =
             Liquor.create("another name", "http://url.com/image.jpg", "http://en.wikipedia.org/wiki", "history", Arrays.asList("ingredient"));
 
-    private static final List<Liquor> LIQUORS = Arrays.asList(LIQUOR);
+    private static final List<Liquor> REMOTE_LIQUORS = Arrays.asList(LIQUOR);
     private static final List<Liquor> LOCAL_LIQUORS = Arrays.asList(LIQUOR1);
 
     private LiquorsRepository repository;
@@ -38,7 +39,7 @@ public class LiquorsRepositoryTest {
     @Before
     public void setUp() {
         initMocks(this);
-        when(remoteSource.getLiquors()).thenReturn(Observable.just(LIQUORS));
+        when(remoteSource.getLiquors()).thenReturn(Observable.just(REMOTE_LIQUORS));
         when(localSource.getLiquors()).thenReturn(Observable.just(LOCAL_LIQUORS));
 
         when(localSource.putLiquors(any())).thenAnswer(new Answer<Observable<List<Liquor>>>() {
@@ -59,8 +60,23 @@ public class LiquorsRepositoryTest {
         List<Liquor> liquors = testSubscriber.getOnNextEvents().get(0);
 
         testSubscriber.assertNoErrors();
-        assertThat(liquors).isEqualTo(LIQUORS);
-        verify(localSource).putLiquors(LIQUORS);
+        assertThat(liquors).isEqualTo(REMOTE_LIQUORS);
+        verify(localSource).putLiquors(REMOTE_LIQUORS);
+    }
+
+    @Test
+    public void testThatGetLiquorsRetrievesFromCacheIfLiquorsAlreadyLoaded() {
+        TestSubscriber<List<Liquor>> remoteSubscriber = new TestSubscriber<>();
+        repository.getLiquors()
+                .subscribe(remoteSubscriber);
+        TestSubscriber<List<Liquor>> cacheSubscriber = new TestSubscriber<>();
+        repository.getLiquors()
+                .subscribe(cacheSubscriber);
+        List<Liquor> result = cacheSubscriber.getOnNextEvents().get(0);
+
+        remoteSubscriber.assertNoErrors();
+        assertThat(result).isEqualTo(REMOTE_LIQUORS);
+        verify(remoteSource, atMost(1)).getLiquors();
     }
 
     @Test

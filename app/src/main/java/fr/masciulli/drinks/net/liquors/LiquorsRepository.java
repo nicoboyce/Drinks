@@ -11,6 +11,8 @@ public class LiquorsRepository implements ReadableLiquorsDataSource {
     private final WritableLiquorsDataSource localSource;
     private final ReadableLiquorsDataSource remoteSource;
 
+    private List<Liquor> cached;
+
     public static LiquorsRepository getInstance(ReadableLiquorsDataSource remoteSource, WritableLiquorsDataSource localSource) {
         if (instance == null) {
             instance = new LiquorsRepository(remoteSource, localSource);
@@ -25,8 +27,18 @@ public class LiquorsRepository implements ReadableLiquorsDataSource {
 
     @Override
     public Observable<List<Liquor>> getLiquors() {
+        if (cached != null) {
+            return Observable.just(cached);
+        }
+
         return remoteSource.getLiquors()
+                .map(this::cacheLiquors)
                 .flatMap(localSource::putLiquors)
                 .onErrorResumeNext(localSource.getLiquors());
+    }
+
+    private List<Liquor> cacheLiquors(List<Liquor> liquors) {
+        cached = liquors;
+        return cached;
     }
 }
