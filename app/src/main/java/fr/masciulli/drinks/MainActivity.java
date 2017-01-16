@@ -13,8 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import fr.masciulli.drinks.Injection;
-import fr.masciulli.drinks.R;
 import fr.masciulli.drinks.drinks.DrinksFragment;
 import fr.masciulli.drinks.drinks.DrinksPresenter;
 import fr.masciulli.drinks.liquors.LiquorsFragment;
@@ -44,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
                 drinksFragment,
                 Injection.provideSubscribeScheduler(),
                 Injection.provideObserveScheduler()
-                );
+        );
         drinksFragment.setPresenter(drinksPresenter);
 
         LiquorsPresenter liquorsPresenter = new LiquorsPresenter(Injection.provideLiquorsRepository(),

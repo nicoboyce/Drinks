@@ -19,7 +19,11 @@ import com.squareup.picasso.Picasso;
 
 import fr.masciulli.drinks.R;
 import fr.masciulli.drinks.model.Drink;
+import fr.masciulli.drinks.net.Client;
 import fr.masciulli.drinks.ui.EnterPostponeTransitionCallback;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class DrinkActivity extends AppCompatActivity {
     public static final String EXTRA_DRINK = "extra_drink";
@@ -42,13 +46,11 @@ public class DrinkActivity extends AppCompatActivity {
             postponeEnterTransition();
         }
 
-        drink = getIntent().getParcelableExtra(EXTRA_DRINK);
         setContentView(R.layout.activity_drink);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setTitle(drink.name());
 
         imageView = (ImageView) findViewById(R.id.image);
         historyView = (TextView) findViewById(R.id.history);
@@ -56,11 +58,26 @@ public class DrinkActivity extends AppCompatActivity {
         ingredientsView = (TextView) findViewById(R.id.ingredients);
         wikipediaButton = (Button) findViewById(R.id.wikipedia);
 
-        setupViews();
+        loadDrink(getIntent().getStringExtra(EXTRA_DRINK));
+    }
+
+    private void loadDrink(String drinkName) {
+        Client.getInstance()
+                .getDrinks()
+                .flatMap(Observable::from)
+                .filter(drink -> drink.name().equals(drinkName))
+                .single()
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::bindViews);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void setupViews() {
+    private void bindViews(Drink drink) {
+        this.drink = drink;
+
+        setTitle(drink.name());
+
         Picasso.with(this)
                 .load(drink.imageUrl())
                 .noFade()

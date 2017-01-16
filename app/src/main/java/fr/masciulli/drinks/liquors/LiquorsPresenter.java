@@ -13,7 +13,10 @@ public class LiquorsPresenter implements LiquorsContract.Presenter {
     private final Scheduler subscribeScheduler;
     private final Scheduler observeScheduler;
 
-    public LiquorsPresenter(LiquorsRepository liquorsRepository, LiquorsContract.View view, Scheduler subscribeScheduler, Scheduler observeScheduler) {
+    public LiquorsPresenter(LiquorsRepository liquorsRepository,
+                            LiquorsContract.View view,
+                            Scheduler subscribeScheduler,
+                            Scheduler observeScheduler) {
         this.liquorsRepository = liquorsRepository;
         this.view = view;
         this.subscribeScheduler = subscribeScheduler;

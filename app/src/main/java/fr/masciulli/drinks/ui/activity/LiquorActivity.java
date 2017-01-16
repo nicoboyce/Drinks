@@ -68,12 +68,7 @@ public class LiquorActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recycler);
         setupRecyclerView();
 
-        if (savedInstanceState == null) {
-            loadDrinks();
-        } else {
-            List<Drink> drinks = savedInstanceState.getParcelableArrayList(STATE_DRINKS);
-            onDrinksRetrieved(drinks);
-        }
+        loadDrinks();
     }
 
     private void setupRecyclerView() {
@@ -96,7 +91,7 @@ public class LiquorActivity extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void onDrinkClick(int position, Drink drink) {
         Intent intent = new Intent(this, DrinkActivity.class);
-        intent.putExtra(DrinkActivity.EXTRA_DRINK, drink);
+        //intent.putExtra(DrinkActivity.EXTRA_DRINK, drink);
         if (TRANSITIONS_AVAILABLE) {
             TileViewHolder holder = (TileViewHolder) recyclerView.findViewHolderForAdapterPosition(position);
             String transition = getString(R.string.transition_drink);
@@ -141,11 +136,5 @@ public class LiquorActivity extends AppCompatActivity {
         }
 
         return false;
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(STATE_DRINKS, adapter.getDrinks());
     }
 }
