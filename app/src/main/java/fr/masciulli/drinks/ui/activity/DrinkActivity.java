@@ -46,7 +46,7 @@ public class DrinkActivity extends AppCompatActivity {
             postponeEnterTransition();
         }
 
-        setContentView(R.layout.activity_drink);
+        setContentView(R.layout.fragment_drink);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

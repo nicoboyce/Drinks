@@ -24,6 +24,15 @@
         </activity>
 
         <activity
+            android:name=".drink.DrinkActivity"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar.WhiteBackground">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <activity
             android:name=".ui.activity.DrinkActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar.WhiteBackground">
