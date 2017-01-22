@@ -3,6 +3,7 @@ package fr.masciulli.drinks.drink;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import fr.masciulli.drinks.Injection;
 import fr.masciulli.drinks.R;
 
 public class DrinkActivity extends AppCompatActivity {
@@ -16,7 +17,13 @@ public class DrinkActivity extends AppCompatActivity {
 
         DrinkFragment fragment = createOrRetrieveFragment();
 
-        DrinkContract.Presenter presenter = new DrinkPresenter(fragment);
+        String drinkName = getIntent().getStringExtra(EXTRA_DRINK);
+        DrinkContract.Presenter presenter = new DrinkPresenter(
+                Injection.provideDrinksRepository(),
+                fragment,
+                drinkName,
+                Injection.provideSubscribeScheduler(),
+                Injection.provideObserveScheduler());
         fragment.setPresenter(presenter);
     }
 

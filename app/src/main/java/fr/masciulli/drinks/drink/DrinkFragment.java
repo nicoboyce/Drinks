@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import fr.masciulli.drinks.R;
+import fr.masciulli.drinks.model.Drink;
 
 public class DrinkFragment extends Fragment implements DrinkContract.View {
     private DrinkContract.Presenter presenter;
@@ -45,5 +46,15 @@ public class DrinkFragment extends Fragment implements DrinkContract.View {
 
         presenter.start();
         return root;
+    }
+
+    @Override
+    public void showDrink(Drink drink) {
+        //TODO implement
+    }
+
+    @Override
+    public void showError() {
+        //TODO implement
     }
 }
