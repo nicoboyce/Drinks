@@ -6,11 +6,14 @@ import fr.masciulli.drinks.model.Drink;
 
 public interface DrinkContract {
     interface Presenter extends BasePresenter {
+        void showWikipedia();
     }
 
     interface View extends BaseView<Presenter> {
         void showDrink(Drink drink);
 
         void showError();
+
+        void openWikipedia(String url);
     }
 }

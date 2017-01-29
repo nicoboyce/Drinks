@@ -15,6 +15,8 @@ public class DrinkPresenter implements DrinkContract.Presenter {
     private final Scheduler subscribeScheduler;
     private final Scheduler observeScheduler;
 
+    private Drink drink;
+
     public DrinkPresenter(DrinksRepository repository, DrinkContract.View view, String drinkName, Scheduler subscribeScheduler, Scheduler observeScheduler) {
         this.repository = repository;
         this.view = view;
@@ -39,11 +41,17 @@ public class DrinkPresenter implements DrinkContract.Presenter {
     }
 
     private void drinkLoaded(Drink drink) {
+        this.drink = drink;
         view.showDrink(drink);
     }
 
     private void errorLoadingDrink(Throwable throwable) {
         Timber.e(TAG, "Couldn't load drink", throwable);
         view.showError();
+    }
+
+    @Override
+    public void showWikipedia() {
+        view.openWikipedia(drink.getWikipedia());
     }
 }
