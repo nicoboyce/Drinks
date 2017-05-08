@@ -1,3 +1,7 @@
+A non-functional Android app for learning and testing purposes.
+
+Forked from Drinks, the readme for which appears below
+
 Drinks
 ======
 
